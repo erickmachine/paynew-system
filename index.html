@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Pagamento via PIX</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: #fdfdf9ee;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #000000;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a763;
+            color: rgb(255, 255, 255);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #copiaCola {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .secure-payment {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #555;
+        }
+        .secure-payment img {
+            width: 150px;
+            height: auto;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Pagamento via PIX</h1>
+    <div class="form-group">
+        <label for="valor">R$</label>
+        <input type="number" id="valor" placeholder="Digite o valor... (ex: 10.99)" required>
+    </div>
+    <button onclick="mostrarChavePix()">Efetuar Pagamento</button>
+    <div id="copiaCola"></div>
+    <div class="loading" id="loading">Após pagar aguarde...</div>
+</div>
+
+<div class="secure-payment">
+    <p>Certificação de Segurança</p>
+    <img src="img/selo-mp.jpg" alt="Selo de Segurança">
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script>
+function triggerConfetti() {
+    var duration = 15 * 100;
+    var animationEnd = Date.now() + duration;
+    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    var interval = setInterval(function() {
+        var timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+            return clearInterval(interval);
+        }
+
+        var particleCount = 50 * (timeLeft / duration);
+        confetti(Object.assign({}, defaults, {
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 }
+        }));
+        confetti(Object.assign({}, defaults, {
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 }
+        }));
+    }, 250);
+}
+
+function mostrarChavePix() {
+    const valor = document.getElementById('valor').value;
+    if (valor) {
+        const chavePix = "10c3c19a-2ed8-4361-89c2-dce43539752f";
+        
+        document.getElementById('copiaCola').innerHTML = `
+            <p>Chave PIX: <strong>${chavePix}</strong></p>
+            <p>Valor: R$ <strong>${valor}</strong></p>
+            <p>Copie a chave acima e cole no aplicativo de pagamento.</p>
+        `;
+
+        document.getElementById('loading').style.display = 'block';
+        
+        // Dispara o efeito de confetes
+        triggerConfetti();
+
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+            enviarComprovante(valor, chavePix);
+        }, 10000);
+    } else {
+        alert('Por favor, insira um valor válido.');
+    }
+}
+
+function enviarComprovante(valor, chavePix) {
+    const mensagem = `Comprovante de pagamento via PIX:\nChave: ${chavePix}\nValor: R$ ${valor}`;
+    const encodedMessage = encodeURIComponent(mensagem);
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=5511911754750&text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+}
+</script>
+</body>
+</html>
