@@ -3,151 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Pagamento via PIX</title>
+    <title>Pagamento Seguro via PIX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #ffffff;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
-        .container {
-            max-width: 400px;
-            margin: auto;
-            background: #fdfdf9ee;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #000000;
-            border-radius: 4px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #28a763;
-            color: rgb(255, 255, 255);
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        #copiaCola {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .loading {
-            display: none;
-            text-align: center;
-            margin-top: 20px;
-        }
-        .secure-payment {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 14px;
-            color: #555;
-        }
-        .secure-payment img {
-            width: 150px;
-            height: auto;
-            margin: 0 5px;
+        .animate-pulse {
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
-<body>
-<div class="container">
-    <h1>Pagamento via PIX</h1>
-    <div class="form-group">
-        <label for="valor">R$</label>
-        <input type="number" id="valor" placeholder="Digite o valor... (ex: 10.99)" required>
+<body class="bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Pagamento Seguro via PIX</h1>
+        
+        <div class="mb-6">
+            <label for="valor" class="block text-sm font-medium text-gray-700 mb-2">Valor a Pagar (R$)</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500 sm:text-sm">R$</span>
+                </div>
+                <input type="number" name="valor" id="valor" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" step="0.01" min="0" required>
+            </div>
+        </div>
+
+        <button onclick="mostrarChavePix()" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+            Gerar Chave PIX
+        </button>
+
+        <div id="pixInfo" class="mt-6 hidden">
+            <div class="bg-gray-100 p-4 rounded-md">
+                <h2 class="text-lg font-semibold text-gray-800 mb-2">Informações de Pagamento</h2>
+                <p class="text-sm text-gray-600 mb-2">Chave PIX: <span id="chavePix" class="font-medium"></span></p>
+                <p class="text-sm text-gray-600 mb-4">Valor: R$ <span id="valorPix" class="font-medium"></span></p>
+                <div id="qrcode" class="flex justify-center mb-4"></div>
+                <button onclick="copiarChavePix()" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                    Copiar Chave PIX
+                </button>
+            </div>
+        </div>
+
+        <div id="loading" class="hidden mt-6 text-center">
+            <div class="animate-pulse inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-indigo-500 transition ease-in-out duration-150 cursor-not-allowed">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processando pagamento...
+            </div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <p class="text-sm text-gray-600 mb-2">Pagamento Seguro por</p>
+            <img src="img/pix-selo.png?height=40&width=150" alt="Selo de Segurança" class="mx-auto">
+        </div>
     </div>
-    <button onclick="mostrarChavePix()">Efetuar Pagamento</button>
-    <div id="copiaCola"></div>
-    <div class="loading" id="loading">Após pagar aguarde...</div>
-</div>
 
-<div class="secure-payment">
-    <p>Certificação de Segurança</p>
-    <img src="img/selo-mp.jpg" alt="Selo de Segurança">
-</div>
+    <script>
+        function triggerConfetti() {
+            var duration = 3000;
+            var end = Date.now() + duration;
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-<script>
-function triggerConfetti() {
-    var duration = 15 * 100;
-    var animationEnd = Date.now() + duration;
-    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+            (function frame() {
+                confetti({
+                    particleCount: 7,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff0000', '#00ff00', '#0000ff']
+                });
+                confetti({
+                    particleCount: 7,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff0000', '#00ff00', '#0000ff']
+                });
 
-    function randomInRange(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-
-    var interval = setInterval(function() {
-        var timeLeft = animationEnd - Date.now();
-
-        if (timeLeft <= 0) {
-            return clearInterval(interval);
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
         }
 
-        var particleCount = 50 * (timeLeft / duration);
-        confetti(Object.assign({}, defaults, {
-            particleCount,
-            origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 }
-        }));
-        confetti(Object.assign({}, defaults, {
-            particleCount,
-            origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 }
-        }));
-    }, 250);
-}
+        function mostrarChavePix() {
+            const valor = document.getElementById('valor').value;
+            if (valor && parseFloat(valor) > 0) {
+                const chavePix = "10c3c19a-2ed8-4361-89c2-dce43539752f";
+                
+                document.getElementById('chavePix').textContent = chavePix;
+                document.getElementById('valorPix').textContent = parseFloat(valor).toFixed(2);
+                document.getElementById('pixInfo').classList.remove('hidden');
+                
+                // Generate QR Code
+                QRCode.toCanvas(document.getElementById('qrcode'), `${chavePix}|${valor}`, function (error) {
+                    if (error) console.error(error);
+                    console.log('QR code generated!');
+                });
 
-function mostrarChavePix() {
-    const valor = document.getElementById('valor').value;
-    if (valor) {
-        const chavePix = "10c3c19a-2ed8-4361-89c2-dce43539752f";
-        
-        document.getElementById('copiaCola').innerHTML = `
-            <p>Chave PIX: <strong>${chavePix}</strong></p>
-            <p>Valor: R$ <strong>${valor}</strong></p>
-            <p>Copie a chave acima e cole no aplicativo de pagamento.</p>
-        `;
+                document.getElementById('loading').classList.remove('hidden');
+                
+                triggerConfetti();
 
-        document.getElementById('loading').style.display = 'block';
-        
-        // Dispara o efeito de confetes
-        triggerConfetti();
+                setTimeout(() => {
+                    document.getElementById('loading').classList.add('hidden');
+                    enviarComprovante(valor, chavePix);
+                }, 5000);
+            } else {
+                alert('Por favor, insira um valor válido maior que zero.');
+            }
+        }
 
-        setTimeout(() => {
-            document.getElementById('loading').style.display = 'none';
-            enviarComprovante(valor, chavePix);
-        }, 10000);
-    } else {
-        alert('Por favor, insira um valor válido.');
-    }
-}
+        function copiarChavePix() {
+            const chavePix = document.getElementById('chavePix').textContent;
+            navigator.clipboard.writeText(chavePix).then(() => {
+                alert('Chave PIX copiada para a área de transferência!');
+            });
+        }
 
-function enviarComprovante(valor, chavePix) {
-    const mensagem = `Comprovante de pagamento via PIX:\nChave: ${chavePix}\nValor: R$ ${valor}`;
-    const encodedMessage = encodeURIComponent(mensagem);
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=5511911754750&text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
-}
-</script>
+        function enviarComprovante(valor, chavePix) {
+            const mensagem = `Comprovante de pagamento via PIX:\nChave: ${chavePix}\nValor: R$ ${valor}`;
+            const encodedMessage = encodeURIComponent(mensagem);
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=5511911754750&text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
 </body>
 </html>
