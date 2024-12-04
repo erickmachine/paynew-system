@@ -13,7 +13,7 @@
             50% { transform: scale(1.05); }
         }
         .animate-pulse {
-            animation: pulse 2s infinite;
+            animation: pulse 1s infinite;
         }
     </style>
 </head>
@@ -53,7 +53,7 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Processando pagamento...
+                <span id="message">Processando pagamento...</span>
             </div>
         </div>
 
@@ -64,8 +64,21 @@
     </div>
 
     <script>
+        const messages = [
+            "Seu pagamento está sendo processado, por favor aguarde.",
+            "Aguarde! Estamos processando seu pagamento.",
+            "Quase lá! Um momento enquanto finalizamos seu pagamento.",
+            "Processando pagamento...",
+            "Estamos cuidando disso! Seu pagamento está sendo processado.",
+            "Só mais alguns segundos, obrigado por esperar!",
+            "Processando seu pagamento, por favor não atualize a página.",
+            "Sua transação está em andamento, obrigado pela sua paciência.",
+            "Estamos trabalhando no seu pagamento, por favor aguarde.",
+            "O processamento do pagamento está em andamento..."
+        ];
+
         function triggerConfetti() {
-            var duration = 3000;
+            var duration = 100;
             var end = Date.now() + duration;
 
             (function frame() {
@@ -102,17 +115,25 @@
                 // Generate QR Code
                 QRCode.toCanvas(document.getElementById('qrcode'), `${chavePix}|${valor}`, function (error) {
                     if (error) console.error(error);
-                    console.log('QR code generated!');
+                    console.log('QR code gerado!');
                 });
 
                 document.getElementById('loading').classList.remove('hidden');
-                
                 triggerConfetti();
 
+                // Exibir mensagens aleatórias durante o processamento
+                const messageElement = document.getElementById('message');
+                const interval = setInterval(() => {
+                    const randomIndex = Math.floor(Math.random() * messages.length);
+                    messageElement.innerText = messages[randomIndex];
+                }, 3000); // Troca a mensagem a cada 3 segundos
+
+                // Espera 10 segundos antes de redirecionar
                 setTimeout(() => {
+                    clearInterval(interval); // Para a troca de mensagens
                     document.getElementById('loading').classList.add('hidden');
                     enviarComprovante(valor, chavePix);
-                }, 5000);
+                }, 100000); // 10 segundos
             } else {
                 alert('Por favor, insira um valor válido maior que zero.');
             }
