@@ -15,50 +15,82 @@
         .animate-pulse {
             animation: pulse 1s infinite;
         }
+        .countdown-animation {
+            transition: width 1s linear;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Pagamento Seguro via PIX</h1>
+<body class="bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen flex items-center justify-center p-4 transition-colors duration-300">
+    <button id="themeToggle" class="theme-toggle bg-white text-gray-800 px-4 py-2 rounded-full shadow-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+    </button>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full">
+        <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">Pagamento Seguro via PIX</h1>
         
         <div class="mb-6">
-            <label for="valor" class="block text-sm font-medium text-gray-700 mb-2">Valor a Pagar (R$)</label>
+            <label for="valor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Valor a Pagar (R$)</label>
             <div class="mt-1 relative rounded-md shadow-sm">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span class="text-gray-500 sm:text-sm">R$</span>
+                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">R$</span>
                 </div>
-                <input type="number" name="valor" id="valor" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" step="0.01" min="0" required>
+                <input type="number" name="valor" id="valor" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-12 sm:text-sm border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="0.00" step="0.01" min="0" required>
             </div>
         </div>
 
-        <button onclick="mostrarChavePix()" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
-            Gerar Chave PIX
+        <div class="mb-4">
+            <label for="paymentMethod" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Método de Pagamento</label>
+            <select id="paymentMethod" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <option value="pix">PIX</option>
+                <option value="creditCard">Cartão de Crédito</option>
+                <option value="bankTransfer">Transferência Bancária</option>
+            </select>
+        </div>
+
+        <button id="gerarChavePixBtn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+            Gerar Chave de Pagamento
         </button>
 
         <div id="pixInfo" class="mt-6 hidden">
-            <div class="bg-gray-100 p-4 rounded-md">
-                <h2 class="text-lg font-semibold text-gray-800 mb-2">Informações de Pagamento</h2>
-                <p class="text-sm text-gray-600 mb-2">Chave PIX: <span id="chavePix" class="font-medium"></span></p>
-                <p class="text-sm text-gray-600 mb-4">Valor: R$ <span id="valorPix" class="font-medium"></span></p>
+            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-md">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">Informações de Pagamento</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Chave PIX: <span id="chavePix" class="font-medium"></span></p>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Valor: R$ <span id="valorPix" class="font-medium"></span></p>
                 <div id="qrcode" class="flex justify-center mb-4"></div>
-                <button onclick="copiarChavePix()" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                <button id="copiarChavePixBtn" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                        <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                    </svg>
                     Copiar Chave PIX
                 </button>
             </div>
         </div>
 
-        <div id="loading" class="hidden mt-6 text-center">
-            <div class="animate-pulse inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-indigo-500 transition ease-in-out duration-150 cursor-not-allowed">
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span id="message">Processando pagamento...</span>
+        <div id="loading" class="hidden mt-6">
+            <div class="bg-indigo-500 rounded-full h-2 mb-2">
+                <div id="countdown-bar" class="bg-indigo-700 h-2 rounded-full countdown-animation" style="width: 100%;"></div>
+            </div>
+            <div class="text-center">
+                <div class="animate-pulse inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-indigo-500 transition ease-in-out duration-150">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span id="message">Processando pagamento...</span>
+                </div>
             </div>
         </div>
 
         <div class="mt-8 text-center">
-            <p class="text-sm text-gray-600 mb-2">Pagamento Seguro por</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Pagamento Seguro por</p>
             <img src="img/pix-selo.png?height=40&width=150" alt="Selo de Segurança" class="mx-auto">
         </div>
     </div>
@@ -78,8 +110,8 @@
         ];
 
         function triggerConfetti() {
-            var duration = 100;
-            var end = Date.now() + duration;
+            const duration = 100;
+            const end = Date.now() + duration;
 
             (function frame() {
                 confetti({
@@ -105,6 +137,7 @@
 
         function mostrarChavePix() {
             const valor = document.getElementById('valor').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
             if (valor && parseFloat(valor) > 0) {
                 const chavePix = "10c3c19a-2ed8-4361-89c2-dce43539752f";
                 
@@ -128,12 +161,15 @@
                     messageElement.innerText = messages[randomIndex];
                 }, 3000); // Troca a mensagem a cada 3 segundos
 
+                // Iniciar contagem regressiva
+                startCountdown(10);
+
                 // Espera 10 segundos antes de redirecionar
                 setTimeout(() => {
                     clearInterval(interval); // Para a troca de mensagens
                     document.getElementById('loading').classList.add('hidden');
-                    enviarComprovante(valor, chavePix);
-                }, 100000); // 10 segundos
+                    enviarComprovante(valor, chavePix, paymentMethod);
+                }, 10000); // 10 segundos
             } else {
                 alert('Por favor, insira um valor válido maior que zero.');
             }
@@ -142,16 +178,86 @@
         function copiarChavePix() {
             const chavePix = document.getElementById('chavePix').textContent;
             navigator.clipboard.writeText(chavePix).then(() => {
-                alert('Chave PIX copiada para a área de transferência!');
+                const btn = document.getElementById('copiarChavePixBtn');
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>Copiado!';
+                btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                btn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                setTimeout(() => {
+                    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" /><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" /></svg>Copiar Chave PIX';
+                    btn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                    btn.classList.add('bg-green-500', 'hover:bg-green-600');
+                }, 2000);
             });
         }
 
-        function enviarComprovante(valor, chavePix) {
-            const mensagem = `Comprovante de pagamento via PIX:\nChave: ${chavePix}\nValor: R$ ${valor}`;
+        function enviarComprovante(valor, chavePix, paymentMethod) {
+            const mensagem = `Comprovante de pagamento via ${paymentMethod.toUpperCase()}:\nChave: ${chavePix}\nValor: R$ ${valor}`;
             const encodedMessage = encodeURIComponent(mensagem);
             const whatsappUrl = `https://api.whatsapp.com/send?phone=5511911754750&text=${encodedMessage}`;
             window.open(whatsappUrl, '_blank');
         }
+
+        function startCountdown(seconds) {
+            const countdownBar = document.getElementById('countdown-bar');
+            let timeLeft = seconds;
+
+            const countdownInterval = setInterval(() => {
+                timeLeft--;
+                const width = (timeLeft / seconds) * 100;
+                countdownBar.style.width = `${width}%`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                }
+            }, 1000);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
+            updateThemeColors(isDark);
+        }
+
+        function updateThemeColors(isDark) {
+            const root = document.documentElement;
+            if (isDark) {
+                root.style.setProperty('--bg-gradient-from', '#1a202c');
+                root.style.setProperty('--bg-gradient-to', '#4a5568');
+            } else {
+                root.style.setProperty('--bg-gradient-from', '#3b82f6');
+                root.style.setProperty('--bg-gradient-to', '#9333ea');
+            }
+        }
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('darkMode');
+        if (savedTheme === 'true') {
+            document.body.classList.add('dark');
+            updateThemeColors(true);
+        }
+
+        document.getElementById('gerarChavePixBtn').addEventListener('click', mostrarChavePix);
+        document.getElementById('copiarChavePixBtn').addEventListener('click', copiarChavePix);
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+        // Add event listener for payment method change
+        document.getElementById('paymentMethod').addEventListener('change', function() {
+            const selectedMethod = this.value;
+            const pixInfo = document.getElementById('pixInfo');
+            const generateButton = document.getElementById('gerarChavePixBtn');
+
+            if (selectedMethod === 'pix') {
+                generateButton.textContent = 'Gerar Chave PIX';
+                pixInfo.classList.remove('hidden');
+            } else if (selectedMethod === 'creditCard') {
+                generateButton.textContent = 'Pagar com Cartão de Crédito';
+                pixInfo.classList.add('hidden');
+            } else if (selectedMethod === 'bankTransfer') {
+                generateButton.textContent = 'Gerar Dados para Transferência';
+                pixInfo.classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>
