@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagamento Seguro via PIX</title>
+    <title>Pagamento Seguro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
@@ -23,48 +23,105 @@
             top: 20px;
             right: 20px;
         }
+        .plan-card {
+            transition: all 0.3s ease;
+        }
+        .plan-card:hover {
+            transform: translateY(-5px);
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen flex items-center justify-center p-4 transition-colors duration-300">
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
     <button id="themeToggle" class="theme-toggle bg-white text-gray-800 px-4 py-2 rounded-full shadow-lg">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
         </svg>
     </button>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full">
-        <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">Pagamento Seguro via PIX</h1>
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Escolha seu plano</h1>
         
-        <div class="mb-6">
-            <label for="valor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Valor a Pagar (R$)</label>
-            <div class="mt-1 relative rounded-md shadow-sm">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">R$</span>
-                </div>
-                <input type="number" name="valor" id="valor" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-12 sm:text-sm border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="0.00" step="0.01" min="0" required>
+        <div class="mb-8">
+            <div id="planSelector" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <label class="plan-card bg-white border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500 flex flex-col">
+                    <input type="radio" name="plan" value="plus" class="hidden" checked>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-lg font-semibold text-gray-800">PLUS</span>
+                        <span class="text-sm bg-blue-100 text-blue-800 py-1 px-2 rounded-full">Popular</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800 mb-2">R$ 17,90<span class="text-sm font-normal">/mês</span></div>
+                    <ul class="text-sm text-gray-600 mb-4">
+                        <li class="mb-1">✓ atualização moderada</li>
+                        <li class="mb-1">✓ + de 5 streamings por 30 dias</li>
+                        <li>✓ Suporte moderado</li>
+                    </ul>
+                </label>
+                <label class="plan-card bg-white border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500 flex flex-col">
+                    <input type="radio" name="plan" value="master" class="hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-lg font-semibold text-gray-800">MASTER</span>
+                        <span class="text-sm bg-green-100 text-green-800 py-1 px-2 rounded-full">Recomendado</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800 mb-2">R$ 32,90<span class="text-sm font-normal">/mês</span></div>
+                    <ul class="text-sm text-gray-600 mb-4">
+                        <li class="mb-1">✓ Atualização rápida</li>
+                        <li class="mb-1">✓ + de 8 streamings por 30 dias</li>
+                        <li>✓ Suporte prioritário</li>
+                    </ul>
+                </label>
+                <label class="plan-card bg-white border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500 flex flex-col">
+                    <input type="radio" name="plan" value="star" class="hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-lg font-semibold text-gray-800">STAR</span>
+                        <span class="text-sm bg-purple-100 text-purple-800 py-1 px-2 rounded-full">Premium</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800 mb-2">R$ 89,90<span class="text-sm font-normal">/mês</span></div>
+                    <ul class="text-sm text-gray-600 mb-4">
+                        <li class="mb-1">✓ Atualização mais rápida</li>
+                        <li class="mb-1">✓ + 15 Streamings por 1 ano</li>
+                        <li class="mb-1">✓ Recebe brindes</li>
+                        <li class="mb-1">✓ Liberdade de sugerir</li>
+                        <li>✓ Suporte prioritário</li>
+                    </ul>
+                </label>
             </div>
         </div>
 
-        <div class="mb-4">
-            <label for="paymentMethod" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Método de Pagamento</label>
-            <select id="paymentMethod" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="pix">PIX</option>
-                <option value="creditCard">Cartão de Crédito</option>
-                <option value="bankTransfer">Transferência Bancária</option>
-            </select>
+        <div class="mb-8 bg-gray-50 rounded-lg p-6 border border-gray-200">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Detalhes do Pagamento</h2>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between bg-white p-4 rounded-md border border-gray-200">
+                    <span class="text-gray-700 font-medium">Total a pagar:</span>
+                    <span class="text-2xl font-bold text-gray-800" id="totalValue">R$ 17,90</span>
+                </div>
+                <div class="bg-white p-4 rounded-md border border-gray-200">
+                    <label for="paymentMethod" class="block text-sm font-medium text-gray-700 mb-2">Método de Pagamento</label>
+                    <select id="paymentMethod" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="pix">PIX</option>
+                        <option value="creditCard">Cartão de Crédito</option>
+                        <option value="bankTransfer">Transferência Bancária</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
-        <button id="gerarChavePixBtn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
-            Gerar Chave de Pagamento
+        <button id="gerarChavePixBtn" class="w-full bg-blue-600 text-white py-4 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out text-lg font-semibold shadow-md">
+            Finalizar Compra
         </button>
 
-        <div id="pixInfo" class="mt-6 hidden">
-            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-md">
-                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">Informações de Pagamento</h2>
-                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Chave PIX: <span id="chavePix" class="font-medium"></span></p>
-                <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Valor: R$ <span id="valorPix" class="font-medium"></span></p>
-                <div id="qrcode" class="flex justify-center mb-4"></div>
-                <button id="copiarChavePixBtn" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out flex items-center justify-center">
+        <div id="pixInfo" class="mt-8 hidden">
+            <div class="bg-blue-50 border border-blue-200 p-6 rounded-lg">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Informações de Pagamento PIX</h2>
+                <div class="bg-white p-4 rounded-md border border-gray-200 mb-4">
+                    <p class="text-sm text-gray-600 mb-1">Chave PIX:</p>
+                    <p id="chavePix" class="font-medium text-gray-800"></p>
+                </div>
+                <div class="bg-white p-4 rounded-md border border-gray-200 mb-4">
+                    <p class="text-sm text-gray-600 mb-1">Valor:</p>
+                    <p id="valorPix" class="font-medium text-gray-800"></p>
+                </div>
+                <div id="qrcode" class="flex justify-center mb-6"></div>
+                <button id="copiarChavePixBtn" class="w-full bg-green-500 text-white py-3 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out flex items-center justify-center font-medium">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
                         <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
@@ -74,28 +131,36 @@
             </div>
         </div>
 
-        <div id="loading" class="hidden mt-6">
-            <div class="bg-indigo-500 rounded-full h-2 mb-2">
-                <div id="countdown-bar" class="bg-indigo-700 h-2 rounded-full countdown-animation" style="width: 100%;"></div>
-            </div>
-            <div class="text-center">
-                <div class="animate-pulse inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-indigo-500 transition ease-in-out duration-150">
-                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span id="message">Processando pagamento...</span>
+        <div id="loading" class="hidden mt-8">
+            <div class="bg-blue-50 border border-blue-200 p-6 rounded-lg">
+                <div class="bg-blue-500 rounded-full h-2 mb-4">
+                    <div id="countdown-bar" class="bg-blue-700 h-2 rounded-full countdown-animation" style="width: 100%;"></div>
+                </div>
+                <div class="text-center">
+                    <div class="animate-pulse inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-blue-500 transition ease-in-out duration-150">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span id="message">Processando pagamento...</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="mt-8 text-center">
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Pagamento Seguro por</p>
+            <p class="text-sm text-gray-600 mb-2">Pagamento Seguro por</p>
             <img src="img/pix-selo.png?height=40&width=150" alt="Selo de Segurança" class="mx-auto">
         </div>
     </div>
 
     <script>
+        const plans = [
+            { id: 'plus', name: 'PLUS', price: 17.90 },
+            { id: 'master', name: 'MASTER', price: 32.90 },
+            { id: 'star', name: 'STAR', price: 89.90 }
+        ];
+
         const messages = [
             "Seu pagamento está sendo processado, por favor aguarde.",
             "Aguarde! Estamos processando seu pagamento.",
@@ -136,17 +201,19 @@
         }
 
         function mostrarChavePix() {
-            const valor = document.getElementById('valor').value;
+            const selectedPlan = document.querySelector('input[name="plan"]:checked').value;
+            const plan = plans.find(p => p.id === selectedPlan);
             const paymentMethod = document.getElementById('paymentMethod').value;
-            if (valor && parseFloat(valor) > 0) {
+            
+            if (plan) {
                 const chavePix = "10c3c19a-2ed8-4361-89c2-dce43539752f";
                 
                 document.getElementById('chavePix').textContent = chavePix;
-                document.getElementById('valorPix').textContent = parseFloat(valor).toFixed(2);
+                document.getElementById('valorPix').textContent = `R$ ${plan.price.toFixed(2)}`;
                 document.getElementById('pixInfo').classList.remove('hidden');
                 
                 // Generate QR Code
-                QRCode.toCanvas(document.getElementById('qrcode'), `${chavePix}|${valor}`, function (error) {
+                QRCode.toCanvas(document.getElementById('qrcode'), `${chavePix}|${plan.price}`, function (error) {
                     if (error) console.error(error);
                     console.log('QR code gerado!');
                 });
@@ -168,10 +235,10 @@
                 setTimeout(() => {
                     clearInterval(interval); // Para a troca de mensagens
                     document.getElementById('loading').classList.add('hidden');
-                    enviarComprovante(valor, chavePix, paymentMethod);
+                    enviarComprovante(plan.price, chavePix, paymentMethod);
                 }, 10000); // 10 segundos
             } else {
-                alert('Por favor, insira um valor válido maior que zero.');
+                alert('Por favor, selecione um plano.');
             }
         }
 
@@ -236,6 +303,25 @@
             document.body.classList.add('dark');
             updateThemeColors(true);
         }
+
+        // Update valor input when plan is selected
+        document.querySelectorAll('input[name="plan"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const selectedPlan = plans.find(p => p.id === this.value);
+                if (selectedPlan) {
+                    document.getElementById('totalValue').textContent = `R$ ${selectedPlan.price.toFixed(2)}`;
+                }
+                // Highlight selected plan
+                document.querySelectorAll('.plan-card').forEach(card => {
+                    card.classList.remove('border-blue-500', 'border-4');
+                });
+                this.closest('.plan-card').classList.add('border-blue-500', 'border-4');
+            });
+        });
+
+        // Set initial value and highlight
+        document.getElementById('totalValue').textContent = `R$ ${plans[0].price.toFixed(2)}`;
+        document.querySelector('.plan-card').classList.add('border-blue-500', 'border-4');
 
         document.getElementById('gerarChavePixBtn').addEventListener('click', mostrarChavePix);
         document.getElementById('copiarChavePixBtn').addEventListener('click', copiarChavePix);
