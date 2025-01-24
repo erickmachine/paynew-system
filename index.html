@@ -59,6 +59,13 @@
                         <li>✓ Contas Privadas</li>
                         <li>✓ Duração de 30 dias</li>
                     </ul>
+                    <div class="mt-4">
+                        <input type="text" id="coupon-plus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Código do cupom">
+                        <button type="button" class="apply-coupon mt-2 w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                            Aplicar Cupom
+                        </button>
+                    </div>
+                    <p class="coupon-message mt-2 text-sm"></p>
                 </label>
                 <label class="plan-card bg-white border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500 flex flex-col">
                     <input type="radio" name="plan" value="master" class="hidden">
@@ -78,6 +85,13 @@
                         <li>✓ Contas Privadas</li>
                         <li>✓ Duração de 30 dias </li>
                     </ul>
+                    <div class="mt-4">
+                        <input type="text" id="coupon-master" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Código do cupom">
+                        <button type="button" class="apply-coupon mt-2 w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                            Aplicar Cupom
+                        </button>
+                    </div>
+                    <p class="coupon-message mt-2 text-sm"></p>
                 </label>
                 <label class="plan-card bg-white border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-500 flex flex-col">
                     <input type="radio" name="plan" value="star" class="hidden">
@@ -100,6 +114,13 @@
                         <li>✓ Contas Privadas</li>
                         <li>✓ Duração de 365 dias </li>
                     </ul>
+                    <div class="mt-4">
+                        <input type="text" id="coupon-star" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Código do cupom">
+                        <button type="button" class="apply-coupon mt-2 w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                            Aplicar Cupom
+                        </button>
+                    </div>
+                    <p class="coupon-message mt-2 text-sm"></p>
                 </label>
             </div>
         </div>
@@ -109,7 +130,7 @@
             <div class="space-y-4">
                 <div class="flex items-center justify-between bg-white p-4 rounded-md border border-gray-200">
                     <span class="text-gray-700 font-medium">Total a pagar:</span>
-                    <span class="text-2xl font-bold text-gray-800" id="totalValue">R$ 17,90</span>
+                    <span class="text-2xl font-bold text-gray-800" id="totalValue">R$ 16,90</span>
                 </div>
                 <div class="bg-white p-4 rounded-md border border-gray-200">
                     <label for="paymentMethod" class="block text-sm font-medium text-gray-700 mb-2">Método de Pagamento</label>
@@ -173,8 +194,8 @@
 
     <script>
         const plans = [
-            { id: 'plus', name: 'PLUS', price: 17.90 },
-            { id: 'master', name: 'MASTER', price: 25.90 },
+            { id: 'plus', name: 'PLUS', price: 16.90 },
+            { id: 'master', name: 'MASTER', price: 32.90 },
             { id: 'star', name: 'STAR', price: 89.90 }
         ];
 
@@ -190,6 +211,12 @@
             "Estamos trabalhando no seu pagamento, por favor aguarde.",
             "O processamento do pagamento está em andamento..."
         ];
+
+        const coupons = {
+            'DESCONTO325636': 0.1,
+            'DESCONTO98996566': 0.2,
+            'DESCONTO30': 0.3
+        };
 
         function triggerConfetti() {
             const duration = 100;
@@ -217,20 +244,53 @@
             }());
         }
 
+        function applyCoupon(planId) {
+            const couponInput = document.getElementById(`coupon-${planId}`);
+            const couponCode = couponInput.value.toUpperCase();
+            const couponMessage = couponInput.parentElement.nextElementSibling;
+            const plan = plans.find(p => p.id === planId);
+
+            if (coupons.hasOwnProperty(couponCode)) {
+                const discount = coupons[couponCode];
+                const discountedPrice = plan.price * (1 - discount);
+                plan.discountedPrice = discountedPrice;
+                couponMessage.textContent = `Cupom aplicado! Novo preço: R$ ${discountedPrice.toFixed(2)}`;
+                couponMessage.classList.remove('text-red-600');
+                couponMessage.classList.add('text-green-600');
+                updateTotalValue();
+            } else {
+                couponMessage.textContent = 'Cupom inválido.';
+                couponMessage.classList.remove('text-green-600');
+                couponMessage.classList.add('text-red-600');
+                plan.discountedPrice = null;
+                updateTotalValue();
+            }
+        }
+
+        function updateTotalValue() {
+            const selectedPlan = document.querySelector('input[name="plan"]:checked').value;
+            const plan = plans.find(p => p.id === selectedPlan);
+            if (plan) {
+                const price = plan.discountedPrice || plan.price;
+                document.getElementById('totalValue').textContent = `R$ ${price.toFixed(2)}`;
+            }
+        }
+
         function mostrarChavePix() {
             const selectedPlan = document.querySelector('input[name="plan"]:checked').value;
             const plan = plans.find(p => p.id === selectedPlan);
             const paymentMethod = document.getElementById('paymentMethod').value;
             
             if (plan) {
+                const price = plan.discountedPrice || plan.price;
                 const chavePix = "10c3c19a-2ed8-4361-89c2-dce43539752f";
                 
                 document.getElementById('chavePix').textContent = chavePix;
-                document.getElementById('valorPix').textContent = `R$ ${plan.price.toFixed(2)}`;
+                document.getElementById('valorPix').textContent = `R$ ${price.toFixed(2)}`;
                 document.getElementById('pixInfo').classList.remove('hidden');
                 
                 // Generate QR Code
-                QRCode.toCanvas(document.getElementById('qrcode'), `${chavePix}|${plan.price}`, function (error) {
+                QRCode.toCanvas(document.getElementById('qrcode'), `${chavePix}|${price}`, function (error) {
                     if (error) console.error(error);
                     console.log('QR code gerado!');
                 });
@@ -252,7 +312,7 @@
                 setTimeout(() => {
                     clearInterval(interval); // Para a troca de mensagens
                     document.getElementById('loading').classList.add('hidden');
-                    enviarComprovante(plan.price, chavePix, paymentMethod);
+                    enviarComprovante(price, chavePix, paymentMethod);
                 }, 10000); 
             } else {
                 alert('Por favor, selecione um plano.');
@@ -326,7 +386,7 @@
             radio.addEventListener('change', function() {
                 const selectedPlan = plans.find(p => p.id === this.value);
                 if (selectedPlan) {
-                    document.getElementById('totalValue').textContent = `R$ ${selectedPlan.price.toFixed(2)}`;
+                    updateTotalValue();
                 }
                 // Highlight selected plan
                 document.querySelectorAll('.plan-card').forEach(card => {
@@ -361,6 +421,15 @@
                 pixInfo.classList.add('hidden');
             }
         });
+
+        // Add event listeners for coupon buttons
+        document.querySelectorAll('.apply-coupon').forEach(button => {
+            button.addEventListener('click', function() {
+                const planId = this.closest('.plan-card').querySelector('input[name="plan"]').value;
+                applyCoupon(planId);
+            });
+        });
     </script>
 </body>
 </html>
+
