@@ -335,9 +335,9 @@
         }
 
         function enviarComprovante(valor, chavePix, paymentMethod) {
-            const mensagem = `Comprovante de pagamento via ${paymentMethod.toUpperCase()}:\nChave: ${chavePix}\nValor: R$ ${valor}`;
+            const mensagem = `Aqui está meu Comprovante de pagamento via ${paymentMethod.toUpperCase()}:\nChave: ${chavePix}\nValor: R$ ${valor}`;
             const encodedMessage = encodeURIComponent(mensagem);
-            const whatsappUrl = `https://api.whatsapp.com/send?phone=5511911754750&text=${encodedMessage}`;
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=559285231368&text=${encodedMessage}`;
             window.open(whatsappUrl, '_blank');
         }
 
